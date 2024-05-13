@@ -17,14 +17,16 @@ st.set_page_config(
     initial_sidebar_state='collapsed',
     menu_items={
         'Report a bug': 'mailto:jean.pagan5@upr.edu',
-        'About': """# **Hotel Analytical System v1.0**
+        'About': """ Hotel Analytical System v1.0
         
-Created by:
+Created by DataOps:
 
 - David Castillo Martinez (david.castillo1@upr.edu)
 - Jean C. Pagan Vega (jean.pagan5@upr.edu)
 - Jan Nieves Soto (jan.nieves3@upr.edu)
 - Diego Aviles Cordero (diego.aviles1@upr.edu)
+
+Class: ICOM5016
 """}
 )
 
@@ -44,8 +46,11 @@ left_column, right_column = st.columns(2)
 
 def is_float(string):
     try:
-        float(string)
-        return True
+        num = float(string)
+        if num >= 0:
+            return True
+        else:
+            return False
     except ValueError:
         return False
 
@@ -118,45 +123,66 @@ def main():
         """
         
     st.markdown(fade_in_style, unsafe_allow_html=True)
-    
+
     if choice == "Home":
-        st.markdown('<h2 class="fade-in">Welcome to our Hotel Reservation Management System!</h2>', unsafe_allow_html=True)
+        st.image('Hotel_Analytical_System_1.png', use_column_width=True)
+        st.markdown('<h2 class="fade-in">Welcome to our Hotel Analytical System!🏨</h2>', unsafe_allow_html=True)
         if st.session_state['user']:
             st.success('You are currently logged in.')
         else:
             st.warning('Please log in using the sidebar.')
-            
-        st.write("""
+
+        col1, col2 = st.columns([3, 1])  # Split page into two columns, ratio 3:1
+
+    # List of hotel photo paths
+        hotel_photos = ['Chain1.png', 'Chain2.png', 'Chain3.png', 'Chain4.png', 'Chain5.png']
+
+    # Display hotel photos in the right column
+        with col2:
+            st.write("<h3 class='fade-in'>Our Biggest Users:</h3>", unsafe_allow_html=True)
+            for photo in hotel_photos:
+                st.image(photo, width=200, caption='')
+
+        about_text = """
     <div class="fade-in">
+        <strong>About:</strong>
     
+    Our Hotel Analytical System is designed to streamline the process of managing hotel reservations, providing hotel staff with a user-friendly interface for handling bookings, accessing statistics, and performing administrative tasks.
+      
       ***Key Features:***
           
-    - **Login Page:**  
+    - **Login Page:** 🔐 
       - Easily login or create an employee account to access the system's features.
-      
-    - **Local Statistics:**  
-      - **Employee:** View statistics for their own hotel.
-      - **Supervisor:** Choose any hotel within the same chain to view statistics.
-      - **Administrator:** Access statistics for any hotel in the database.
-      
-    - **Global Statistics:**  
-      - Exclusive access for administrators to view comprehensive global statistics.
-    
-    - **Web-Based Dashboard:**  
-      - Access valuable statistics and insights through our user-friendly web-based dashboard, enhancing your reservation management experience.
-      
-    - **Create:**  
-      - **Administrator:** Create new records for any entity in the database.
-      - **Supervisors:** Create records for room availability without reservations.
-      - **Employees:** Create reservation records effortlessly.
-      
-    - **Update & Delete:**  
-      - Administrators have the authority to update or delete records in the database, ensuring data accuracy and integrity.
 
-    Experience the ease and efficiency of hotel reservation management with our intuitive solution.
+    - **Local Statistics:** 📊  
+      - Access statistics related to hotel operations.
+
+    - **Global Statistics:** 📊
+      - Exclusive access for high-ranking employees to view comprehensive global statistics.
+
+    - **Web-Based Dashboard:** 📊
+      - Access valuable statistics and insights through our user-friendly web-based dashboard, enhancing your reservation management experience.
+
+    - **Create:** ✏️ 
+      - Create and manage records in the system.
+      
+    - **Update & Delete:** ✅❌ 
+      - Users with authorization can update or delete records in the database, ensuring data accuracy and integrity.
+
+    Experience the ease and efficiency of hotel reservation management with our intuitive solution!
     </div>
-    """, unsafe_allow_html=True)
-        
+    """
+        with col1:
+            st.markdown(about_text, unsafe_allow_html=True)
+            
+            st.markdown("<h3 class='fade-in'>How to Use:</h3>", unsafe_allow_html=True)
+            st.write("""
+            - **Step 1:** Log in using the sidebar if you haven't already.
+            - **Step 2:** Navigate to the desired feature using the sidebar menu.
+            - **Step 3:** Follow the on-screen instructions to perform actions such as creating reservations, viewing statistics, and managing records.
+            - **Step 4:** Enjoy the efficiency and convenience of our Hotel Reservation Management System!
+            """)
+            
 #-------------------------------------------------------CREATE NEW ENTITIES-------------------------------------------------------------   
     elif choice == "Manage Entities":
         if st.session_state["position"] == "Administrator":            
@@ -165,7 +191,7 @@ def main():
                     options = ["Create", "Update", "Delete"],
                     icons= ["pencil-square", "arrow-clockwise", "trash"],
                     orientation= "horizontal",
-                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "SlateGray"},}
+                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "LightGray"},}
                     )
         else:
             crud_choice = option_menu(
@@ -173,9 +199,10 @@ def main():
                     options = ["Create"],
                     icons= ["pencil-square"],
                     orientation= "horizontal",
-                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "SlateGray"},}
+                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "LightGray"},}
                     )
-
+        st.sidebar.success("Logged in as " + st.session_state["position"])
+        
         if crud_choice == "Create":
             selected_entity = st.selectbox("Select Entity to Create", create_entities, index=None)
             if selected_entity == "Login":
@@ -185,28 +212,24 @@ def main():
                 eid = st.selectbox("Enter Employee ID", employee_ids, index=None)
                 usernamelogin = st.text_input("Enter Username")
                 passwordlogin = st.text_input("Password", type='password')
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    
-                    if st.button("Create", use_container_width=True):
-                        if usernamelogin and passwordlogin and eid:
-                            account = requests.get(url + "/dataops/login/byemployeeid/" + str(eid)).json()
-                            data = requests.get(url + "/dataops/login/byusername",
-                                params = {
-                                    "username" : usernamelogin
-                                    }
-                                ).json()
-                            if account != "Not Found":
-                                st.warning("There is already an account for this Employee ID")
-                            elif data != "Not Found":
-                                st.warning("This username is already taken")
-                            else:
-                                requests.post(url + "/dataops/login", json={"eid" : int(eid), "username" : username, "password" : password}).json()
-                                st.success("Account was created successfully")
+                
+                if st.button("Create", use_container_width=True):
+                    if usernamelogin and passwordlogin and eid:
+                        account = requests.get(url + "/dataops/login/byemployeeid/" + str(eid)).json()
+                        data = requests.get(url + "/dataops/login/byusername",
+                            params = {
+                                "username" : usernamelogin
+                                }
+                            ).json()
+                        if account != "Not Found":
+                            st.warning("There is already an account for this Employee ID")
+                        elif data != "Not Found":
+                            st.warning("This username is already taken")
                         else:
-                            st.warning("Please fill all the fields above")
+                            requests.post(url + "/dataops/login", json={"eid" : int(eid), "username" : usernamelogin, "password" : passwordlogin}).json()
+                            st.success("Account was created successfully")
+                    else:
+                        st.warning("Please fill all the fields above")
 
             if selected_entity == "Employee":
                 st.header("")
@@ -218,21 +241,17 @@ def main():
                 age = st.text_input("Enter Age")
                 position = st.radio("Choose a Position", {"Administrator","Regular","Supervisor"}, index=None)
                 salary = st.text_input("Enter Salary")
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        if hid and fname and lname and age and position and salary:
-                            if is_int(age) and is_float(salary):
-                                requests.post(url + "/dataops/employee", json={"hid" : int(hid), "fname" : fname, "lname" : lname, "age" : int(age), "position" : position, "salary" : float(salary)}).json()
-                                st.success("Employee was created successfully")
-                            else:
-                                st.warning("The age must be a positive whole number and the salary must be a numerical value")
+                
+                if st.button("Create", use_container_width=True):
+                    if hid and fname and lname and age and position and salary:
+                        if is_int(age) and is_float(salary):
+                            requests.post(url + "/dataops/employee", json={"hid" : int(hid), "fname" : fname, "lname" : lname, "age" : int(age), "position" : position, "salary" : float(salary)}).json()
+                            st.success("Employee was created successfully")
                         else:
-                            st.warning("Please fill all the above fields")
+                            st.warning("The age must be a positive whole number and the salary must be a numerical value")
+                    else:
+                        st.warning("Please fill all the above fields")
 
-            # Falta Add validation to not repeat chain name
             if selected_entity == "Chain":
                 st.header("")
                 cname = st.text_input("Enter Chain Name")
@@ -240,19 +259,16 @@ def main():
                 summermkup = st.text_input("Enter Summer Markup Amount")
                 wintermkup = st.text_input("Enter Winter Markup Amount")
                 fallmkup = st.text_input("Enter Fall Markup Amount")
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        if cname and springmkup and summermkup and wintermkup and fallmkup:
-                            if is_float(springmkup) and is_float(summermkup) and is_float(wintermkup) and is_float(fallmkup):
-                                requests.post(url + "/dataops/chains", json={"cname" : cname, "springmkup" : float(springmkup), "summermkup" : float(summermkup), "wintermkup" : float(wintermkup), "fallmkup" : float(fallmkup)}).json()
-                                st.success("Chain was created successfully")
-                            else:
-                                st.warning("The spring, summer, fall and winter markups must be numerical values")
+                
+                if st.button("Create", use_container_width=True):
+                    if cname and springmkup and summermkup and wintermkup and fallmkup:
+                        if is_float(springmkup) and is_float(summermkup) and is_float(wintermkup) and is_float(fallmkup):
+                            requests.post(url + "/dataops/chains", json={"cname" : cname, "springmkup" : float(springmkup), "summermkup" : float(summermkup), "wintermkup" : float(wintermkup), "fallmkup" : float(fallmkup)}).json()
+                            st.success("Chain was created successfully")
                         else:
-                            st.warning("Please fill all the fields above")
+                            st.warning("The spring, summer, fall and winter markups must be numerical values")
+                    else:
+                        st.warning("Please fill all the fields above")
 
             if selected_entity == "Hotel":
                 st.header("")
@@ -261,16 +277,13 @@ def main():
                 chid = st.selectbox("Enter Chain ID", chain_ids, index=None)
                 hname = st.text_input("Enter Hotel Name")
                 hcity = st.text_input("Enter Hotel City")
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        if chid and hname and hcity:
-                            requests.post(url + "/dataops/hotel", json={"chid" : chid, "hname" : hname, "hcity" : hcity}).json()
-                            st.success("Hotel was created successfully")
-                        else:
-                            st.warning("Please fill all the fields above")
+                
+                if st.button("Create", use_container_width=True):
+                    if chid and hname and hcity:
+                        requests.post(url + "/dataops/hotel", json={"chid" : chid, "hname" : hname, "hcity" : hcity}).json()
+                        st.success("Hotel was created successfully")
+                    else:
+                        st.warning("Please fill all the fields above")
 
             if selected_entity == "Room Description":
                 st.header("")
@@ -289,13 +302,10 @@ def main():
                 rtype = st.radio("Choose Room Type", constraints["types"])
                 capacity = st.radio("Choose Capacity Of Guests", constraints["capacity"])
                 ishandicap = st.radio("Choose Handicapped Accessibility", {False, True})
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        requests.post(url + "/dataops/roomdescription", json={"rname" : rname, "rtype" : rtype, "capacity" : capacity, "ishandicap" : ishandicap}).json()
-                        st.success("Room description was created successfully")
+                
+                if st.button("Create", use_container_width=True):
+                    requests.post(url + "/dataops/roomdescription", json={"rname" : rname, "rtype" : rtype, "capacity" : capacity, "ishandicap" : ishandicap}).json()
+                    st.success("Room description was created successfully")
                     
             if selected_entity == "Client":
                 st.header("")
@@ -303,19 +313,16 @@ def main():
                 lname = st.text_input("Enter Last Name")
                 age = st.text_input("Enter Employee Age")
                 memberyear = st.text_input("Enter Member Year Amount")
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        if fname and lname and age and memberyear:
-                            if is_int(age) and is_int(memberyear):
-                                    requests.post(url + "/dataops/client", json={"fname" : fname, "lname" : lname, "age" : int(age), "memberyear" : int(memberyear)}).json()
-                                    st.success("Client was created successfully")
-                            else:
-                                    st.warning("The age and member year must be integer values")
+                
+                if st.button("Create", use_container_width=True):
+                    if fname and lname and age and memberyear:
+                        if is_int(age) and is_int(memberyear):
+                                requests.post(url + "/dataops/client", json={"fname" : fname, "lname" : lname, "age" : int(age), "memberyear" : int(memberyear)}).json()
+                                st.success("Client was created successfully")
                         else:
-                            st.warning("Please fill all the fields above")
+                                st.warning("The age and member year must be integer values")
+                    else:
+                        st.warning("Please fill all the fields above")
 
             if selected_entity == "Reserve":
                 st.header("")
@@ -328,20 +335,20 @@ def main():
                 clid = st.selectbox("Enter Client ID", client_ids, index=None)
                 payment = st.selectbox("Enter Payment Method", methods, index=None)
                 guests = st.text_input("Enter Reservation Guests")
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        if ruid and clid and payment and guests:
+                
+                if st.button("Create", use_container_width=True):
+                    if ruid and clid and payment and guests:
+                        if is_int(guests):
                             total_cost = requests.get(url + "/dataops/reserve/totalcost/" + str(ruid) + "/" + str(clid)).json()
                             if not total_cost:
                                 st.warning("There is already a reservation with the selected Client ID and the selected Room Unavailable ID")
                             else:
                                 requests.post(url + "/dataops/reserve", json={"ruid" : ruid, "clid" : clid, "total_cost" : float(total_cost[0]["Total Cost"]), "payment" : payment, "guests" : guests}).json()
-                            st.success("Reservation was created successfully")
+                                st.success("Reservation was created successfully")
                         else:
-                            st.warning("Please fill all the fields above")
+                            st.warning("The amount of guests must be a positive whole number")
+                    else:
+                        st.warning("Please fill all the fields above")
                         
 
             if selected_entity == "Room":
@@ -353,19 +360,16 @@ def main():
                 hid = st.selectbox("Enter Hotel ID", hotel_ids, index=None)
                 rdid = st.selectbox("Enter Room Description ID", roomdescription_ids, index=None)
                 rprice = st.text_input("Enter Room Price")
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        if hid and rdid and rprice:
-                            if is_float(rprice):
-                                requests.post(url + "/dataops/room", json={"hid" : hid, "rdid" : rdid, "rprice" : float(rprice)}).json()
-                                st.success("Room was created successfully")
-                            else:
-                                st.warning("The price must be a numerical value")
+                
+                if st.button("Create", use_container_width=True):
+                    if hid and rdid and rprice:
+                        if is_float(rprice):
+                            requests.post(url + "/dataops/room", json={"hid" : hid, "rdid" : rdid, "rprice" : float(rprice)}).json()
+                            st.success("Room was created successfully")
                         else:
-                            st.warning("Please fill all the fields above")
+                            st.warning("The price must be a numerical value")
+                    else:
+                        st.warning("Please fill all the fields above")
 
             if selected_entity == "Room Unavailable":
                 st.header("")
@@ -373,27 +377,24 @@ def main():
                 room_ids = [str(room["rid"]) for room in room_ids if room["rid"] != -1]
                 rid = st.selectbox("Enter Room ID", room_ids, index=None)
                 dates = st.date_input("Enter the Reservation's Start and End Date", value=(datetime.datetime.now(), datetime.datetime.now() + datetime.timedelta(days=1)))   
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    pass
-                with col2:
-                    if st.button("Create", use_container_width=True):
-                        if st.button(f"Create New {selected_entity}"):   
-                            if rid:        
-                                if len(dates) < 2:
-                                    st.warning("Please select a start and end date for the reservation")
-                                else:
-                                    startdate = dates[0]
-                                    enddate = dates[1]
-                                    requests.post(url + "/dataops/roomunavailable", json={"rid" : rid, "startdate" : str(startdate), "enddate" : str(enddate)}).json()
-                                    st.success("Room Unavailable was created successfully")
-                            else:
-                                st.warning("Please fill all the fields above")
+                
+                if st.button("Create", use_container_width=True):   
+                    if rid:        
+                        if len(dates) < 2:
+                            st.warning("Please select a start and end date for the reservation")
+                        else:
+                            startdate = dates[0]
+                            enddate = dates[1]
+                            requests.post(url + "/dataops/roomunavailable", json={"rid" : rid, "startdate" : str(startdate), "enddate" : str(enddate)}).json()
+                            st.success("Room Unavailable was created successfully")
+                    else:
+                        st.warning("Please fill all the fields above")
+                                
         elif crud_choice == "Update":
-            ["Login", "Employee", "Chain", "Hotel", "Room Description", "Client", "Reserve", "Room", "Room Unavailable"]
             selected_entity = st.selectbox("Select Entity to Update", create_entities, index=None)
             
             if selected_entity == "Login":
+                st.header("")
                 logins = requests.get(url + "/dataops/login").json()
                 login_ids = [str(login["lid"]) for login in logins if login["lid"] != -1]
                 lid = st.selectbox("Enter Login ID", login_ids, index=None)
@@ -404,14 +405,11 @@ def main():
                     curr_username = selected_login["username"]
                     curr_password = selected_login["password"]
                     curr_eid = selected_login["eid"]
-                    if len(employee_ids) >= curr_eid:
-                        eid = st.selectbox("Enter the new Employee ID", employee_ids, index=curr_eid - 1)
-                    else:
-                        eid = st.selectbox("Enter the new Employee ID", employee_ids, index=len(employee_ids) - 1)
+                    eid = st.selectbox("Enter the new Employee ID", employee_ids, index=None)
                     username = st.text_input("Enter the new Username", value=curr_username)
                     password = st.text_input("Enter the new Password", value=curr_password, type='password')
                     
-                    if st.button("Update"):
+                    if st.button("Update", use_container_width=True):
                         if lid and eid and username and password:
                             new_login_by_id = requests.get(url + "/dataops/login/byemployeeid/" + eid).json()
                             if (new_login_by_id != "Not Found" and new_login_by_id["eid"] == curr_eid) or new_login_by_id == "Not Found":
@@ -426,22 +424,25 @@ def main():
                                     st.warning("The selected Username is already being used")
                             else:
                                 st.warning("The selected Employee ID is already being used")
+                        else:
+                            st.warning("Please fill all the fields above")
                                 
             if selected_entity == "Employee":
+                st.header("")
                 employees = requests.get(url + "/dataops/employee").json()
                 employee_ids = [str(employee["eid"]) for employee in employees if employee["eid"] != -1]
                 eid = st.selectbox("Enter Employee ID", employee_ids, index=None)
                 if eid:
                     selected_employee = requests.get(url + "/dataops/employee/" + eid).json()
                     hotels = requests.get(url + "/dataops/hotel").json()
-                    employee_ids = [str(hotel["hid"]) for hotel in hotels if hotel["hid"] != -1]
+                    hotel_ids = [str(hotel["hid"]) for hotel in hotels if hotel["hid"] != -1]
                     curr_hid = selected_employee["hid"]
                     curr_fname = selected_employee["fname"]
                     curr_lname = selected_employee["lname"]
                     curr_age = selected_employee["age"]
                     curr_position = selected_employee["position"]
                     curr_salary = selected_employee["salary"]
-                    hid = st.selectbox("Enter the new Hotel ID", employee_ids, index=None)
+                    hid = st.selectbox("Enter the new Hotel ID", hotel_ids, index=None)
                     fname = st.text_input("Enter the new First Name", value=curr_fname)
                     lname = st.text_input("Enter the new Last Name", value=curr_lname)
                     age = st.text_input("Enter the new Age", value=curr_age)
@@ -451,23 +452,372 @@ def main():
                         idx = 0
                     else:
                         idx = 2
-                    position = st.radio("Choose a Position", {"Administrator","Regular","Supervisor"}, index=idx)
+                    position = st.radio("Choose a Position", ["Administrator","Regular","Supervisor"], index=idx)
                     salary = st.text_input("Enter the new Salary", value=curr_salary)
-                    if is_float(salary) and is_int(age):
-                        pass
-                    else:
-                        st.warning("The salary and age must be numerical values with the age being a positive whole number")
+                    if st.button("Update", use_container_width=True):
+                        if hid and fname and lname and age and position and salary:
+                            if is_float(salary) and is_int(age):
+                                requests.put(url + "/dataops/employee/" + eid, json={"eid" : eid, "hid" : hid, "fname" : fname, "lname" : lname, "age" : age, "position" : position, "salary" : salary}).json()
+                                st.success("The record was successfully updated")
+                            else:
+                                st.warning("The salary and age must be numerical values with the age being a positive whole number")
+                        else:
+                            st.warning("Please fill all the fields above")
+                            
+            if selected_entity == "Chain":
+                st.header("")
+                chains = requests.get(url + "/dataops/chains").json()
+                chain_ids = [str(chain["chid"]) for chain in chains if chain["chid"] != -1]
+                chid = st.selectbox("Enter Chain ID", chain_ids, index=None)
+                if chid:
+                    selected_chain = requests.get(url + "/dataops/chains/" + chid).json()
+                    curr_cname = selected_chain["cname"]
+                    curr_springmkup = selected_chain["springmkup"]
+                    curr_summermkup = selected_chain["summermkup"]
+                    curr_fallmkup = selected_chain["fallmkup"]
+                    curr_wintermkup = selected_chain["wintermkup"]
+                    cname = st.text_input("Enter the new Chain Name", value=curr_cname)
+                    springmkup = st.text_input("Enter the new Spring Markup", value=curr_springmkup)
+                    summermkup = st.text_input("Enter the new Summer Markup", value=curr_summermkup)
+                    fallmkup = st.text_input("Enter the new Fall Markup", value=curr_fallmkup)
+                    wintermkup = st.text_input("Enter the new Winter Markup", value=curr_wintermkup)
+                    if st.button("Update", use_container_width=True):
+                        if chid and cname and springmkup and summermkup and fallmkup and wintermkup:
+                            if is_float(springmkup) and is_float(summermkup) and is_float(wintermkup) and is_float(fallmkup):
+                                requests.put(url + "/dataops/chains/" + chid, json={"chid" : chid, "cname" : cname, "springmkup" : springmkup, "summermkup" : summermkup, "fallmkup" : fallmkup, "wintermkup" : wintermkup}).json()
+                                st.success("The record was successfully updated")
+                            else:
+                                st.warning("The Spring, Summer, Fall and Winter Markups must be numerical values")
+                        else:
+                            st.warning("Please fill all the above fields")
+            
+            if selected_entity == "Reserve":
+                st.header("")
+                methods = ["cash", "check", "credit card", "debit card", "pear pay"]
+                reserves = requests.get(url + "/dataops/reserve").json()
+                reserve_ids = [str(reserve["reid"]) for reserve in reserves if reserve["reid"] != -1]
+                reid = st.selectbox("Enter Reservation ID", reserve_ids, index=None)
+                if reid:
+                    selected_reserve = requests.get(url+"/dataops/reserve/" + reid).json()
+                    clients = requests.get(url + "/dataops/client").json()
+                    client_ids = [str(client["clid"]) for client in clients if client["clid"] != -1]
+                    roomunavailables = requests.get(url + "/dataops/roomunavailable").json()
+                    roomunavailable_ids = [str(roomunavailable["ruid"]) for roomunavailable in roomunavailables if roomunavailable ["ruid"] != -1]
+                    curr_clid = selected_reserve["clid"]
+                    curr_guests = selected_reserve["guests"]
+                    curr_payment = selected_reserve["payment"]
+                    curr_ruid = selected_reserve["ruid"]
                     
+                    if curr_payment == "cash":
+                        idx = 0
+                    elif curr_payment == "check":
+                        idx = 1
+                    elif curr_payment == "credit card":
+                        idx = 2
+                    elif curr_payment == "debit card":
+                        idx = 3
+                    else:
+                        idx = 4
+                        
+                    clid = st.selectbox("Enter the new Client ID", client_ids, index=None)
+                    ruid = st.selectbox("Enter the new Room Unavailable ID", roomunavailable_ids, index=None)
+                    guests = st.text_input("Enter the new amount of Guests", value = curr_guests)
+                    payment = st.selectbox("Enter the new Payment Method", methods, index=idx)
+                    if st.button("Update", use_container_width=True):
+                        if reid and clid and ruid and guests and payment:
+                            if is_int(guests):
+                                total_cost = requests.get(url + "/dataops/reserve/totalcost/" + str(ruid) + "/" + str(clid) + "/" + str(reid)).json()
+                                if not total_cost:
+                                    st.warning("There is already a reservation with the selected Client ID and the selected Room Unavailable ID")
+                                else:
+                                    requests.put(url + "/dataops/reserve/" + str(reid), json={"reid" : reid, "ruid" : ruid, "clid" : clid, "total_cost" : float(total_cost[0]["Total Cost"]), "payment" : payment, "guests" : guests}).json()
+                                    st.success("The record was successfully updated")
+                            else:
+                                st.warning("The amount of guests must be a positive whole number")
+                        else:
+                            st.warning("Please fill all the above fields")
+                            
+            if selected_entity == "Client":
+                st.header("")
+                clients = requests.get(url + "/dataops/client").json()
+                client_ids = [str(client["clid"]) for client in clients if client ["clid"] != -1]
+                clid = st.selectbox("Enter Client ID", client_ids, index=None)
+                if clid:
+                    selected_client = requests.get(url + "/dataops/client/" + clid).json()
+                    curr_fname = selected_client["fname"]
+                    curr_lname = selected_client["lname"]
+                    curr_age = selected_client["age"]
+                    curr_memberyear = selected_client["memberyear"]
+                    fname = st.text_input("Enter the new First name", value = curr_fname)
+                    lname = st.text_input("Enter the new Last Name", value = curr_lname)
+                    age = st.text_input("Enter the new Age", value = curr_age)
+                    memberyear = st.text_input("Enter the new Years of Membership", value = curr_memberyear)
+                    if st.button("Update", use_container_width=True):
+                        if clid and fname and lname and age and memberyear:
+                            if is_int(age) and is_int(memberyear):
+                                requests.put(url + "/dataops/client/" + str(clid), json={"clid" : clid, "fname" : fname, "lname" : lname, "age" : int(age), "memberyear" : int(memberyear)}).json()
+                                st.success("The record was successfully updated")
+                            else:
+                                st.warning("The age and membership year must be positive whole numbers")
+                        else:
+                            st.warning("Please fill all the above fields")
+            
+            if selected_entity == "Room Unavailable":
+                st.header("")
+                roomunavailables = requests.get(url + "/dataops/roomunavailable").json()
+                roomunavailable_ids = [str(roomunavailable["ruid"]) for roomunavailable in roomunavailables if roomunavailable["ruid"] != -1]
+                ruid = st.selectbox("Enter Room Unavailable ID", roomunavailable_ids, index = None)
+                if ruid:
+                    selected_room_unavailable = requests.get(url + "/dataops/roomunavailable/" + ruid).json()
+                    rooms = requests.get(url + "/dataops/room").json()
+                    room_ids = [str(room["rid"]) for room in rooms if room["rid"] != -1]
+                    curr_rid = selected_room_unavailable["rid"]
+                    curr_startdate = selected_room_unavailable["startdate"]
+                    curr_enddate = selected_room_unavailable["enddate"]
+                    date_format = "%a, %d %b %Y %H:%M:%S %Z"
+                    curr_startdate = datetime.datetime.strptime(curr_startdate, date_format)
+                    curr_enddate = datetime.datetime.strptime(curr_enddate, date_format)
+                    rid = st.selectbox("Enter the new Room ID", room_ids, index = None)
+                    dates = st.date_input("Enter the Reservation's Start and End Date", value=(curr_startdate, curr_enddate))
+                    if st.button("Update", use_container_width=True):
+                        if len(dates) == 2:
+                            startdate = dates[0]
+                            enddate = dates[1]
+                            if ruid and rid and startdate and enddate:
+                                requests.put(url + "/dataops/roomunavailable/" + str(ruid), json={"ruid" : ruid, "rid" : rid, "startdate" : str(startdate), "enddate" : str(enddate)}).json()
+                                st.success("The record was successfully updated")
+                        else:
+                            st.warning("Please select a start and end date for the reservation")
+            
+            if selected_entity == "Room":
+                st.header("")
+                rooms = requests.get(url + "/dataops/room").json()
+                room_ids = [str(room["rid"]) for room in rooms if room["rid"] != -1]
+                rid = st.selectbox("Enter the Room ID", room_ids, index = None)
+                if rid:
+                    selected_room = requests.get(url + "/dataops/room/" + rid).json()
+                    hotels = requests.get(url + "/dataops/hotel").json()
+                    hotel_ids = [str(hotel["hid"]) for hotel in hotels if hotel["hid"] != -1]
+                    roomdescriptions = requests.get(url + "/dataops/roomdescription").json()
+                    roomdescription_ids = [str(roomdescription["rdid"]) for roomdescription in roomdescriptions if roomdescription["rdid"] != -1]
+                    curr_hid = selected_room["hid"]
+                    curr_rdid = selected_room["rdid"]
+                    curr_rprice = selected_room["rprice"]
+                    hid = st.selectbox("Enter the new Hotel ID", hotel_ids, index=None)
+                    rdid = st.selectbox("Enter the new Room Description ID", roomdescription_ids, index=None)
+                    rprice = st.text_input("Enter the new Room Price", value=curr_rprice)
+                    if st.button("Update", use_container_width=True):
+                        if rid and hid and rdid and rprice:
+                            if is_float(rprice):
+                                requests.put(url + "/dataops/room/" + str(rid), json={"rid" : rid, "hid" : hid, "rdid" : rdid, "rprice" : float(rprice)}).json()
+                                st.success("The record was successfully updated")
+                            else:
+                                st.warning("The room's price must be a positive numerical value")
+                        else:
+                            st.warning("Please fill all the above fields")
+            
+            if selected_entity == "Hotel":
+                st.header("")
+                hotels = requests.get(url + "/dataops/hotel").json()
+                hotel_ids = [str(hotel["hid"]) for hotel in hotels if hotel["hid"] != -1]
+                hid = st.selectbox("Enter Hotel ID", hotel_ids, index=None)
+                if hid:
+                    selected_hotel = requests.get(url + "/dataops/hotel/" + hid).json()
+                    chains = requests.get(url + "/dataops/chains").json()
+                    chains_ids = [str(chain["chid"]) for chain in chains if chain["chid"] != -1]
+                    curr_chid = selected_hotel["chid"]
+                    curr_hcity = selected_hotel["hcity"]
+                    curr_hname = selected_hotel["hname"]
+
+                    chid = st.selectbox("Enter the new Chain ID", chains_ids, index=None)
+                    hcity = st.text_input("Enter the new Hotel City", value=curr_hcity)
+                    hname = st.text_input("Enter the new Hotel Name", value=curr_hname)
+                    if st.button("Update", use_container_width=True):
+                        if chid and hcity and hid and hname:
+                            requests.put(url + "/dataops/hotel/" + str(hid), json={"chid" : chid, "hcity" : hcity, "hid" : hid, "hname" : hname}).json()
+                            st.success("The record was successfully updated")
+                        else:
+                            st.warning("Please fill all the fields above")
+                            
+            if selected_entity == "Room Description":
+                st.header("")
+                roomdescriptions = requests.get(url + "/dataops/roomdescription").json()
+                roomdescription_ids = [str(roomdescription["rdid"]) for roomdescription in roomdescriptions if roomdescription["rdid"] != -1]
+                rdid = st.selectbox("Enter Room Description ID", roomdescription_ids, index=None)
+                if rdid: 
+                    selected_room_description = requests.get(url + "/dataops/roomdescription/" + rdid).json()
+                    curr_capacity = selected_room_description["capacity"]
+                    curr_ishandicap = selected_room_description["ishandicap"]
+                    curr_rname = selected_room_description["rname"]
+                    curr_rtype = selected_room_description["rtype"]
+                    
+                    room_constraints = {
+                        "Standard": {"capacity": {1}, "types": {"Basic", "Premium"}, "idx" : 0},
+                        "Standard Queen": {"capacity": {1, 2}, "types": {"Basic", "Premium", "Deluxe"}, "idx" : 1},
+                        "Standard King": {"capacity": {2}, "types": {"Basic", "Premium", "Deluxe"}, "idx" : 2},
+                        "Double Queen": {"capacity": {4}, "types": {"Basic", "Premium", "Deluxe"}, "idx" : 3},
+                        "Double King": {"capacity": {4, 6}, "types": {"Basic", "Premium", "Deluxe", "Suite"}, "idx" : 4},
+                        "Triple King": {"capacity": {6}, "types": {"Deluxe", "Suite"}, "idx" : 5},
+                        "Executive Family": {"capacity": {4, 6, 8}, "types": {"Deluxe", "Suite"}, "idx" : 6},
+                        "Presidential": {"capacity": {4, 6, 8}, "types": {"Suite"}, "idx" : 7}
+                    }
+                    
+                    idx = room_constraints[curr_rname]["idx"]
+                    rname = st.radio("Choose Room Name", list(room_constraints.keys()), index=idx)
+                    constraints = room_constraints.get(rname, {"capacity": set(), "types": set()})
+                    rtype = st.radio("Choose Room Type", constraints["types"], index=None)
+                    capacity = st.radio("Choose Capacity Of Guests", constraints["capacity"],index=None)
+                    ishandicap = st.radio("Choose Handicapped Accessibility", {False, True}, index=None)
+                    
+                    if st.button("Update", use_container_width=True):
+                        if capacity and (ishandicap == True or ishandicap == False) and rdid and rname and rtype:
+                            requests.put(url + "/dataops/roomdescription/" + str(rdid), json={"capacity" : capacity, "ishandicap" : ishandicap, "rdid" : rdid, "rname" : rname, "rtype" : rtype}).json()
+                            st.success("The record was successfully updated")
+                        else:
+                            st.warning("Please fill all the fields above")
+
                     
         elif crud_choice == "Delete":
-            selected_entity = st.selectbox("Select Entity to Delete From", list(entity_endpoints.keys()), index=None)
-            if selected_entity:
-                endpoint, id_key = entity_endpoints[selected_entity]
-                records = requests.get(url + endpoint).json()
-                record_ids = [str(record[id_key]) for record in records if record[id_key] != -1]
-                selected_id = st.selectbox(f"Choose {selected_entity} ID", record_ids, index=None)
-                st.button(f"Delete {selected_entity} Record {selected_id}")
-
+            selected_entity = st.selectbox("Select Entity to Delete", create_entities, index=None)
+            if selected_entity == "Chain":
+                st.header("")
+                chains = requests.get(url + "/dataops/chains").json()
+                chain_ids = [str(chain["chid"]) for chain in chains if chain["chid"] != -1]
+                chid = st.selectbox("Enter Chain ID", chain_ids, index=None)
+                if chid:
+                    if st.button("Delete", use_container_width=True):
+                        related_hotels = requests.get(url + "/dataops/hotel/bychid/" + str(chid)).json()
+                        if related_hotels == "Not Found":
+                            requests.delete(url + "/dataops/chains/" + str(chid))
+                            st.success("The record was successfully deleted")
+                        else:
+                            st.warning("There is a hotel associated with this chain")
+                            st.subheader("Table of all hotels (hid) associated with this chain")
+                            st.table(related_hotels)
+                            
+            if selected_entity == "Login":
+                st.header("")
+                logins = requests.get(url + "/dataops/login").json()
+                login_ids = [str(login["lid"]) for login in logins if login["lid"] != -1]
+                lid = st.selectbox("Enter Login ID", login_ids, index=None)
+                if lid:
+                    if st.button("Delete", use_container_width=True):
+                        requests.delete(url + "/dataops/login/" + str(lid))
+                        st.success("The record was successfully deleted")
+                        
+                        
+            if selected_entity == "Employee":
+                st.header("")
+                employees = requests.get(url + "/dataops/employee").json()
+                employee_ids = [str(employee["eid"]) for employee in employees if employee["eid"] != -1]
+                eid = st.selectbox("Enter Employee ID", employee_ids, index=None)
+                if eid:
+                    if st.button("Delete", use_container_width=True):
+                        related_logins = requests.get(url + "/dataops/login/byemployeeid/" + str(eid)).json()
+                        if related_logins == "Not Found":
+                            requests.delete(url + "/dataops/employee/" + str(eid))
+                            st.success("The record was successfully deleted")
+                        else:
+                            st.warning("There is a login associated with this employee")
+                            st.subheader("Table of all logins (lid) associated with this employee")
+                            st.table(related_logins)
+            
+            if selected_entity == "Reserve":
+                st.header("")
+                reserves = requests.get(url + "/dataops/reserve").json()
+                reserve_ids = [str(reserve["reid"]) for reserve in reserves if reserve["reid"] != -1]
+                reid = st.selectbox("Enter Reservation ID", reserve_ids, index=None)
+                if reid:
+                    if st.button("Delete", use_container_width=True):
+                        requests.delete(url + "/dataops/reserve/" + str(reid))
+                        st.success("The record was successfully deleted")
+            
+            if selected_entity == "Room Unavailable":
+                st.header("")
+                roomunavailables = requests.get(url + "/dataops/roomunavailable").json()
+                roomunavailable_ids = [str(roomunavailable["ruid"]) for roomunavailable in roomunavailables if roomunavailable["ruid"] != -1]
+                ruid = st.selectbox("Enter Room Unavailable ID", roomunavailable_ids, index = None)
+                if ruid:
+                    if st.button("Delete", use_container_width=True):
+                        related_reserves = requests.get(url + "/dataops/reserve/byruid/" + str(ruid)).json()
+                        if related_reserves == "Not Found":
+                            requests.delete(url + "/dataops/roomunavailable/" + str(ruid))
+                            st.success("The record was successfully deleted")
+                        else:
+                            st.warning("There is a reservation associated with this unavailable room")
+                            st.subheader("Table of all reservations (reid) associated with this unavailable room")
+                            st.table(related_reserves)
+                            
+            if selected_entity == "Room":
+                st.header("")
+                rooms = requests.get(url + "/dataops/room").json()
+                room_ids = [str(room["rid"]) for room in rooms if room["rid"] != -1]
+                rid = st.selectbox("Enter the Room ID", room_ids, index = None)
+                if rid:
+                    if st.button("Delete", use_container_width=True):
+                        related_roomunavailable = requests.get(url + "/dataops/roomunavailable/byrid/" + str(rid)).json()
+                        if related_roomunavailable == "Not Found":
+                            requests.delete(url + "/dataops/room/" + str(rid))
+                            st.success("The record was successfully deleted")
+                        else:
+                            st.warning("There is an unavailable room associated with this room")
+                            st.subheader("Table of all unavailable rooms (ruid) associated with this room")
+                            st.table(related_roomunavailable)
+                            
+            if selected_entity == "Hotel":
+                st.header("")
+                hotels = requests.get(url + "/dataops/hotel").json()
+                hotel_ids = [str(hotel["hid"]) for hotel in hotels if hotel["hid"] != -1]
+                hid = st.selectbox("Enter Hotel ID", hotel_ids, index=None)
+                if hid:
+                    if st.button("Delete", use_container_width=True):
+                        related_employees = requests.get(url + "/dataops/employee/byhid/" + str(hid)).json()
+                        if related_employees == "Not Found":
+                            related_rooms = requests.get(url + "/dataops/room/byhid/" + str(hid)).json()
+                            if related_rooms == "Not Found":
+                                requests.delete(url + "/dataops/hotel/" + str(hid))
+                                st.success("The record was successfully deleted")
+                            else:
+                                st.warning("There is a room associated with this hotel")
+                                st.subheader("Table of all rooms (rid) associated with this hotel")
+                                st.table(related_rooms)
+                        else:
+                            st.warning("There is an employee associated with this hotel")
+                            st.subheader("Table of all employees (eid) associated with this hotel")
+                            st.table(related_employees)
+            
+            if selected_entity == "Room Description":
+                st.header("")
+                roomdescriptions = requests.get(url + "/dataops/roomdescription").json()
+                roomdescription_ids = [str(roomdescription["rdid"]) for roomdescription in roomdescriptions if roomdescription["rdid"] != -1]
+                rdid = st.selectbox("Enter Room Description ID", roomdescription_ids, index=None)
+                if rdid: 
+                    if st.button("Delete", use_container_width=True):
+                        related_rooms = requests.get(url + "/dataops/room/byrdid/" + str(rdid)).json()
+                        if related_rooms == "Not Found":
+                            requests.delete(url + "/dataops/roomdescription/" + str(rdid))
+                            st.success("The record was successfully deleted")
+                        else:
+                            st.warning("There is a room associated with this description")
+                            st.subheader("Table of all rooms (rid) associated with this description")
+                            st.table(related_rooms)
+            
+            if selected_entity == "Client":
+                st.header("")
+                clients = requests.get(url + "/dataops/client").json()
+                client_ids = [str(client["clid"]) for client in clients if client ["clid"] != -1]
+                clid = st.selectbox("Enter Client ID", client_ids, index=None)
+                if clid:
+                    if st.button("Delete", use_container_width=True):
+                        related_reserves = requests.get(url + "/dataops/reserve/byclid/" + str(clid)).json()
+                        if related_reserves == "Not Found" :
+                            requests.delete(url + "/dataops/client/" + str(clid))
+                            st.success("The record was successfully deleted")
+                        else:
+                            st.warning("There is a reservation associated with this client")
+                            st.subheader("Table of all reservations (reid) associated with this client")
+                            st.table(related_reserves)
+                            
 #-------------------------------------------------------------------------------------------------#
     elif choice == "Statistics":
         if st.session_state["position"] == "Administrator":
@@ -476,7 +826,7 @@ def main():
                     options = ["Global Statistics", "Local Statistics"],
                     icons= ["globe-americas", "bar-chart"],
                     orientation= "horizontal",
-                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "SlateGrey"},}
+                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "LightGray"},}
                     )
         else: 
             statistic_choice = option_menu(
@@ -484,9 +834,9 @@ def main():
                     options = ["Local Statistics"],
                     icons= ["bar-chart"],
                     orientation= "horizontal",
-                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "SlateGrey"},}
+                    styles={"nav-link-selected": {"background-color": "SlateGrey"},"nav-link": {"font-size": "25px", "margin":"0px", "--hover-color": "LightGray"},}
                     )
-        st.sidebar.success(st.session_state["position"])
+        st.sidebar.success("Logged in as " + st.session_state["position"])
         if st.session_state['login']:
             st.sidebar.success("Logged in as {}".format(st.session_state['user']))
             st.session_state['login'] = False
@@ -1062,6 +1412,63 @@ def main():
 #-------------------------------------------------------------------------------------------------#
 
     elif choice == "Login" or choice == "Logout":
+        st.image('Hotel_Analytical_System_1.png', use_column_width=True)
+        st.markdown('<h2 class="fade-in">Welcome to our Hotel Analytical System!🏨</h2>', unsafe_allow_html=True)
+        if st.session_state['user']:
+            st.success('You are currently logged in.')
+        else:
+            st.warning('Please log in using the sidebar.')
+
+        col1, col2 = st.columns([3, 1])  # Split page into two columns, ratio 3:1
+
+    # List of hotel photo paths
+        hotel_photos = ['Chain1.png', 'Chain2.png', 'Chain3.png', 'Chain4.png', 'Chain5.png']
+
+    # Display hotel photos in the right column
+        with col2:
+            st.write("<h3 class='fade-in'>Our Biggest Users:</h3>", unsafe_allow_html=True)
+            for photo in hotel_photos:
+                st.image(photo, width=200, caption='')
+
+        about_text = """
+    <div class="fade-in">
+        <strong>About:</strong>
+    
+    Our Hotel Analytical System is designed to streamline the process of managing hotel reservations, providing hotel staff with a user-friendly interface for handling bookings, accessing statistics, and performing administrative tasks.
+      
+      ***Key Features:***
+          
+    - **Login Page:** 🔐 
+      - Easily login or create an employee account to access the system's features.
+
+    - **Local Statistics:** 📊  
+      - Access statistics related to hotel operations.
+
+    - **Global Statistics:** 📊
+      - Exclusive access for high-ranking employees to view comprehensive global statistics.
+
+    - **Web-Based Dashboard:** 📊
+      - Access valuable statistics and insights through our user-friendly web-based dashboard, enhancing your reservation management experience.
+
+    - **Create:** ✏️ 
+      - Create and manage records in the system.
+      
+    - **Update & Delete:** ✅❌ 
+      - Users with authorization can update or delete records in the database, ensuring data accuracy and integrity.
+
+    Experience the ease and efficiency of hotel reservation management with our intuitive solution!
+    </div>
+    """
+        with col1:
+            st.markdown(about_text, unsafe_allow_html=True)
+            
+            st.markdown("<h3 class='fade-in'>How to Use:</h3>", unsafe_allow_html=True)
+            st.write("""
+            - **Step 1:** Log in using the sidebar if you haven't already.
+            - **Step 2:** Navigate to the desired feature using the sidebar menu.
+            - **Step 3:** Follow the on-screen instructions to perform actions such as creating reservations, viewing statistics, and managing records.
+            - **Step 4:** Enjoy the efficiency and convenience of our Hotel Reservation Management System!
+            """)
         if not st.session_state['user']:
             st.sidebar.subheader("Login Section")
             username = st.sidebar.text_input("User Name")
@@ -1102,6 +1509,63 @@ def main():
                 st.rerun()
     
     elif choice == "Create Employee Account":
+        st.image('Hotel_Analytical_System_1.png', use_column_width=True)
+        st.markdown('<h2 class="fade-in">Welcome to our Hotel Analytical System!🏨</h2>', unsafe_allow_html=True)
+        if st.session_state['user']:
+            st.success('You are currently logged in.')
+        else:
+            st.warning('Please log in using the sidebar.')
+
+        col1, col2 = st.columns([3, 1])  # Split page into two columns, ratio 3:1
+
+    # List of hotel photo paths
+        hotel_photos = ['Chain1.png', 'Chain2.png', 'Chain3.png', 'Chain4.png', 'Chain5.png']
+
+    # Display hotel photos in the right column
+        with col2:
+            st.write("<h3 class='fade-in'>Our Biggest Users:</h3>", unsafe_allow_html=True)
+            for photo in hotel_photos:
+                st.image(photo, width=200, caption='')
+
+        about_text = """
+    <div class="fade-in">
+        <strong>About:</strong>
+    
+    Our Hotel Analytical System is designed to streamline the process of managing hotel reservations, providing hotel staff with a user-friendly interface for handling bookings, accessing statistics, and performing administrative tasks.
+      
+      ***Key Features:***
+          
+    - **Login Page:** 🔐 
+      - Easily login or create an employee account to access the system's features.
+
+    - **Local Statistics:** 📊  
+      - Access statistics related to hotel operations.
+
+    - **Global Statistics:** 📊
+      - Exclusive access for high-ranking employees to view comprehensive global statistics.
+
+    - **Web-Based Dashboard:** 📊
+      - Access valuable statistics and insights through our user-friendly web-based dashboard, enhancing your reservation management experience.
+
+    - **Create:** ✏️ 
+      - Create and manage records in the system.
+      
+    - **Update & Delete:** ✅❌ 
+      - Users with authorization can update or delete records in the database, ensuring data accuracy and integrity.
+
+    Experience the ease and efficiency of hotel reservation management with our intuitive solution!
+    </div>
+    """
+        with col1:
+            st.markdown(about_text, unsafe_allow_html=True)
+            
+            st.markdown("<h3 class='fade-in'>How to Use:</h3>", unsafe_allow_html=True)
+            st.write("""
+            - **Step 1:** Log in using the sidebar if you haven't already.
+            - **Step 2:** Navigate to the desired feature using the sidebar menu.
+            - **Step 3:** Follow the on-screen instructions to perform actions such as creating reservations, viewing statistics, and managing records.
+            - **Step 4:** Enjoy the efficiency and convenience of our Hotel Reservation Management System!
+            """)
         employee_ids = requests.get(url + "/dataops/employee").json()
         employee_ids = [employee["eid"] for employee in employee_ids if employee["eid"] != -1]
         st.sidebar.subheader("Create Account Section")
