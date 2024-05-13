@@ -8,8 +8,6 @@ import matplotlib.ticker as ticker
 import locale
 import datetime
 
-# Streamlit serving content at root path
-st.set_option('server.baseUrlPath', '')
 
 # Initialize session state for login status
 st.set_page_config(
